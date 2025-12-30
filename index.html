@@ -1,160 +1,245 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malla Curricular Medicina UCSUR – Danixa</title>
-  <style>
-    /* ===== Reset & Base ===== */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Segoe UI", Roboto, sans-serif; background:#f1f5f9; color:#1f2937; padding:2rem; }
-    h1 { text-align:center; margin-bottom:2rem; font-size:2rem; }
-    /* ===== Ciclos ===== */
-    .ciclo { background:#ffffff; border-radius:1rem; box-shadow:0 2px 6px rgba(0,0,0,.08); padding:1rem 1.25rem; margin-bottom:1.5rem; opacity:1; transition:opacity .3s ease; }
-    .ciclo.locked { opacity:.35; pointer-events:none; }
-    .ciclo h2 { color:#2563eb; font-size:1.25rem; margin-bottom:.75rem; }
-    /* ===== Cursos ===== */
-    .curso { display:flex; justify-content:space-between; align-items:center; padding:.5rem .75rem; border-radius:.5rem; cursor:pointer; transition:background .2s ease; }
-    .curso:hover { background:#e0f2fe; }
-    .curso.completado { background:#bbf7d0 !important; text-decoration:line-through; }
-    .curso.locked { background:#e5e7eb; cursor:not-allowed; }
-  </style>
+<meta charset="UTF-8">
+<title>Malla Medicina UCSUR 2025</title>
+
+<style>
+:root{
+  --rosa-fondo:#fff1f2;
+  --rosa-card:#fce7f3;
+  --rosa-ok:#fbcfe8;
+  --morado:#9333ea;
+  --morado-borde:#e9d5ff;
+  --gris:#e5e7eb;
+}
+body{
+  font-family: Arial, sans-serif;
+  background: var(--rosa-fondo);
+  padding: 20px;
+}
+h1{
+  text-align:center;
+  color: var(--morado);
+}
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap:15px;
+}
+.ciclo{
+  background: var(--rosa-card);
+  border: 2px solid var(--morado-borde);
+  border-radius: 14px;
+  padding:10px;
+}
+.ciclo h2{
+  text-align:center;
+  color: var(--morado);
+}
+.curso{
+  background:white;
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:6px 8px;
+  margin:4px 0;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.curso.locked{
+  background: var(--gris);
+  color:#9ca3af;
+  cursor:not-allowed;
+}
+.curso.completed{
+  background: var(--rosa-ok);
+  text-decoration: line-through;
+}
+.creditos{
+  font-size: 12px;
+  color: var(--morado);
+}
+#progreso{
+  margin-top:20px;
+  text-align:center;
+  font-weight:bold;
+  color: var(--morado);
+}
+</style>
 </head>
+
 <body>
-  <h1>Malla Curricular Medicina UCSUR (14 ciclos)</h1>
-  <div id="app"></div>
 
-  <script>
-    // === Datos de la malla (simplificados) ===
-    const cyclesData = [
-      {cycle:1, courses:[
-        "Biología Celular y Molecular",
-        "Anatomía General",
-        "Bioquímica",
-        "Redacción General",
-        "Realidad Nacional"
-      ]},
-      {cycle:2, courses:[
-        "Morfofisiología I",
-        "Lengua y Oratoria",
-        "Introducción a la Investigación",
-        "Filosofía",
-        "Epidemiología"
-      ]},
-      {cycle:3, courses:[
-        "Morfofisiología II",
-        "Estadística General",
-        "Genética Médica",
-        "Educación Ambiental",
-        "Bioética"
-      ]},
-      {cycle:4, courses:[
-        "Morfofisiología III",
-        "Inmunología",
-        "Infectología Básica",
-        "Desarrollo y Crecimiento",
-        "Fisiopatología I"
-      ]},
-      {cycle:5, courses:[
-        "Morfofisiología IV",
-        "Anatomía Patológica",
-        "Apoyo al Diagnóstico",
-        "Farmacología",
-        "Semiología"
-      ]},
-      {cycle:6, courses:[
-        "Semiología basada en Simulación",
-        "Fisiopatología II",
-        "Bioestadística",
-        "Fundamentos de Medicina Intercultural",
-        "Salud Mental"
-      ]},
-      {cycle:7, courses:[
-        "Nutrición y Prácticas Saludables",
-        "Salud Pública",
-        "Medicina Basada en la Evidencia",
-        "Medicina Interna I",
-        "Metodología de la Investigación"
-      ]},
-      {cycle:8, courses:[
-        "Medicina Interna II",
-        "Atención Primaria en Salud",
-        "Terapéutica",
-        "Cirugía",
-        "Simulación Quirúrgica"
-      ]},
-      {cycle:9, courses:[
-        "Ecografía",
-        "Cuidados Paliativos y Rehabilitación Física",
-        "Análisis de Casos I",
-        "Tesis I",
-        "Medicina Interna III"
-      ]},
-      {cycle:10, courses:[
-        "Simulación Clínica Integrada",
-        "Medicina Legal",
-        "Simulación Pediátrica",
-        "Pediatría",
-        "Tesis II"
-      ]},
-      {cycle:11, courses:[
-        "Informática Biomédica",
-        "Gerencia en Salud",
-        "Pre‑Internado",
-        "Análisis de Casos II",
-        "Ginecología y Obstetricia"
-      ]},
-      {cycle:12, courses:[
-        "Simulación Gineco‑Obstetra",
-        "Seguridad del Paciente y Calidad en Salud",
-        "Trabajo de Investigación",
-        "Electivo 1",
-        "Electivo 2"
-      ]},
-      {cycle:13, courses:[
-        "Internado en Medicina",
-        "Internado en Cirugía"
-      ]},
-      {cycle:14, courses:[
-        "Internado en Pediatría",
-        "Internado en Ginecología y Obstetricia"
-      ]}
-    ];
+<h1>Malla Curricular Medicina Humana – UCSUR 2025</h1>
+<div class="grid" id="contenedor"></div>
+<div id="progreso"></div>
 
-    // === Estado (se guarda en localStorage) ===
-    const state = JSON.parse(localStorage.getItem('mallaState') || '{}');
-    const saveState = () => localStorage.setItem('mallaState', JSON.stringify(state));
+<script>
+const cursos = {
 
-    // === Renderizar ===
-    const app = document.getElementById('app');
-    const render = () => {
-      app.innerHTML = '';
-      cyclesData.forEach((c, i) => {
-        const cycleDiv = document.createElement('div');
-        const prevComplete = i === 0 || cyclesData[i - 1].courses.every(course => state[course]);
-        if (!prevComplete) cycleDiv.classList.add('locked');
-        cycleDiv.classList.add('ciclo');
+"Ciclo 1":{
+ "Química":{creditos:5, prereq:[]},
+ "Matemática":{creditos:3, prereq:[]},
+ "Lengua y Oratoria":{creditos:3, prereq:[]},
+ "Introducción a la Medicina":{creditos:2, prereq:[]},
+ "Desempeño Universitario":{creditos:2, prereq:[]},
+ "Biología Celular y Molecular":{creditos:6, prereq:[]}
+},
 
-        const h2 = document.createElement('h2');
-        h2.textContent = `Ciclo ${c.cycle}`;
-        cycleDiv.appendChild(h2);
+"Ciclo 2":{
+ "Redacción General":{creditos:3, prereq:["Lengua y Oratoria"]},
+ "Realidad Nacional":{creditos:2, prereq:[]},
+ "Morfofisiología I":{creditos:6, prereq:["Biología Celular y Molecular"]},
+ "Introducción a la Investigación":{creditos:3, prereq:["Introducción a la Medicina","Lengua y Oratoria"]},
+ "Bioquímica":{creditos:5, prereq:["Química"]},
+ "Anatomía General":{creditos:3, prereq:["Biología Celular y Molecular"]}
+},
 
-        c.courses.forEach(course => {
-          const div = document.createElement('div');
-          div.textContent = course;
-          div.classList.add('curso');
+"Ciclo 3":{
+ "Morfofisiología II":{creditos:7, prereq:["Morfofisiología I","Anatomía General"]},
+ "Inmunología":{creditos:3, prereq:["Morfofisiología I"]},
+ "Genética Médica":{creditos:3, prereq:["Biología Celular y Molecular"]},
+ "Filosofía":{creditos:3, prereq:[]},
+ "Estadística General":{creditos:4, prereq:["Matemática"]},
+ "Educación Ambiental":{creditos:2, prereq:["Desempeño Universitario"]}
+},
 
-          const completed = !!state[course];
-          if (!prevComplete) {
-            div.classList.add('locked');
-          } else {
-            if (completed) div.classList.add('completado');
-            div.addEventListener('click', () => {
-              state[course] = !state[course];
-              saveState();
-              render();
-            });
-          }
-          cycleDiv.appendChild(div);
-        });
-       
+"Ciclo 4":{
+ "Morfofisiología III":{creditos:7, prereq:["Morfofisiología II"]},
+ "Infectología Básica":{creditos:5, prereq:["Bioquímica","Morfofisiología I"]},
+ "Fisiopatología I":{creditos:4, prereq:["Morfofisiología II"]},
+ "Desarrollo y Crecimiento":{creditos:3, prereq:["Biología Celular y Molecular"]},
+ "Bioética":{creditos:2, prereq:["Introducción a la Medicina","Redacción General"]}
+},
+
+"Ciclo 5":{
+ "Salud Mental":{creditos:4, prereq:["Filosofía"]},
+ "Morfofisiología IV":{creditos:6, prereq:["Morfofisiología III"]},
+ "Fundamentos de Medicina Interna":{creditos:2, prereq:["Filosofía","Realidad Nacional"]},
+ "Fisiopatología II":{creditos:5, prereq:["Morfofisiología II"]},
+ "Bioestadística":{creditos:2, prereq:["Estadística General"]}
+},
+
+"Ciclo 6":{
+ "Semiología Basada en la Simulación":{creditos:2, prereq:["Fisiopatología I","Fisiopatología II","Inmunología","Morfofisiología II","Morfofisiología III","Morfofisiología IV"]},
+ "Semiología":{creditos:5, prereq:["Fisiopatología I","Fisiopatología II","Inmunología","Morfofisiología II","Morfofisiología III","Morfofisiología IV"]},
+ "Farmacología":{creditos:6, prereq:["Infectología Básica"]},
+ "Apoyo al Diagnóstico":{creditos:3, prereq:["Morfofisiología IV"]},
+ "Anatomía Patológica":{creditos:4, prereq:["Fisiopatología II"]}
+},
+
+"Ciclo 7":{
+ "Seguridad del Paciente y Calidad":{creditos:2, prereq:["Bioética"]},
+ "Nutrición y Prácticas Saludables":{creditos:4, prereq:["Farmacología"]},
+ "Metodología de la Investigación":{creditos:2, prereq:["Bioestadística"]},
+ "Medicina Interna I":{creditos:10, prereq:["Anatomía Patológica","Semiología","Semiología Basada en la Simulación"]},
+ "Epidemiología":{creditos:4, prereq:["Bioestadística"]}
+},
+
+"Ciclo 8":{
+ "Salud Pública":{creditos:4, prereq:["Epidemiología"]},
+ "Medicina Interna II":{creditos:10, prereq:["Medicina Interna I"]},
+ "Medicina Basada en la Evidencia":{creditos:2, prereq:["Epidemiología","Metodología de la Investigación"]},
+ "Atención Primaria en Salud":{creditos:4, prereq:["Epidemiología"]}
+},
+
+"Ciclo 9":{
+ "Tesis I":{creditos:2, prereq:["Medicina Basada en la Evidencia"]},
+ "Terapéutica":{creditos:2, prereq:["Medicina Interna II"]},
+ "Simulación Clínica Integrada":{creditos:3, prereq:["Medicina Interna II"]},
+ "Medicina Legal":{creditos:2, prereq:["Bioética","Semiología","Semiología Basada en la Simulación"]},
+ "Medicina Interna III":{creditos:10, prereq:["Medicina Interna II"]}
+},
+
+"Ciclo 10":{
+ "Simulación Quirúrgica":{creditos:2, prereq:["Medicina Interna III","Simulación Clínica Integrada"]},
+ "Ecografía":{creditos:2, prereq:["Apoyo al Diagnóstico","Semiología"]},
+ "Cuidados Paliativos y Rehabilitación Física":{creditos:2, prereq:["Bioética","Terapéutica"]},
+ "Cirugía":{creditos:11, prereq:["Medicina Interna III","Simulación Clínica Integrada"]},
+ "Análisis de Casos I":{creditos:2, prereq:["Medicina Interna III","Simulación Clínica Integrada","Terapéutica"]}
+},
+
+"Ciclo 11":{
+ "Tesis II":{creditos:2, prereq:["Tesis I"]},
+ "Simulación Pediátrica":{creditos:2, prereq:["Medicina Interna III","Simulación Clínica Integrada"]},
+ "Simulación Gineco-Obstétrica":{creditos:2, prereq:["Cirugía","Simulación Quirúrgica"]},
+ "Pediatría":{creditos:10, prereq:["Medicina Interna III","Simulación Clínica Integrada"]},
+ "Ginecología y Obstetricia":{creditos:6, prereq:["Cirugía","Simulación Quirúrgica"]}
+},
+
+"Ciclo 12":{
+ "Preinternado":{creditos:16, prereq:["Ginecología y Obstetricia"]},
+ "Informática Biomédica":{creditos:2, prereq:["Atención Primaria en Salud"]},
+ "Gerencia en Salud":{creditos:2, prereq:["Atención Primaria en Salud"]},
+ "Análisis de Casos II":{creditos:2, prereq:["Análisis de Casos I"]}
+},
+
+"Ciclo 13":{
+ "Trabajo de Investigación":{creditos:1, prereq:["Preinternado"]},
+ "Internado en Pediatría":{creditos:10, prereq:["Preinternado"]},
+ "Internado en Medicina":{creditos:10, prereq:["Preinternado"]}
+},
+
+"Ciclo 14":{
+ "Internado en Cirugía":{creditos:10, prereq:["Preinternado"]},
+ "Internado en Ginecología y Obstetricia":{creditos:10, prereq:["Preinternado"]}
+}
+
+};
+
+const estado = JSON.parse(localStorage.getItem("malla2025") || "{}");
+
+function guardar(){
+  localStorage.setItem("malla2025", JSON.stringify(estado));
+}
+
+function render(){
+  const cont = document.getElementById("contenedor");
+  cont.innerHTML = "";
+  let total = 0;
+  let completos = 0;
+
+  for(const ciclo in cursos){
+    const box = document.createElement("div");
+    box.className = "ciclo";
+    box.innerHTML = `<h2>${ciclo}</h2>`;
+
+    for(const curso in cursos[ciclo]){
+      total++;
+      const {creditos, prereq} = cursos[ciclo][curso];
+      const habilitado = prereq.every(p => estado[p]);
+
+      const div = document.createElement("div");
+      div.className = "curso";
+      div.innerHTML = `<span>${curso}</span><span class="creditos">${creditos} cr</span>`;
+
+      if(!habilitado) div.classList.add("locked");
+      if(estado[curso]){
+        div.classList.add("completed");
+        completos++;
+      }
+
+      if(habilitado){
+        div.onclick = () => {
+          estado[curso] = !estado[curso];
+          guardar();
+          render();
+        };
+      }
+
+      box.appendChild(div);
+    }
+    cont.appendChild(box);
+  }
+
+  document.getElementById("progreso").textContent =
+    `Progreso total: ${Math.round((completos/total)*100)}%`;
+}
+
+render();
+</script>
+
+</body>
+</html>
